@@ -15,6 +15,23 @@ class Operator(Enum):
 
     def __str__(self) -> str:
         return self.value
+    
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def from_value(value: str) -> Operator:
+        if value == '==':
+            return Operator.EQ
+        elif value == '!=':
+            return Operator.NEQ
+        elif value == '>':
+            return Operator.GT
+        elif value == '<':
+            return Operator.LT
+        elif value == '>=':
+            return Operator.GTE
+        elif value == '<=':
+            return Operator.LTE
 
 class Conjunction(Enum):
     AND = 'and'
@@ -50,6 +67,12 @@ class Output(Enum):
 
     def __str__(self) -> str:
         return self.name
+    
+    def from_str(value: str) -> Output:
+        if value == 'MTS':
+            return Output.MTS
+        elif value == 'MTO':
+            return Output.MTO
 
 class Level(Enum):
     high = 0
@@ -63,14 +86,17 @@ class Rule:
     value: float
 
     def __str__(self) -> str:
-        return f"{self.feature} {self.operator.value} {self.value}"
+        return f"{self.feature} {self.operator} {self.value}"
 
     def __repr__(self) -> str:
         return self.__str__()
     
     def create_rule(feature: str, operator: str, value: float | Level) -> Rule:
         feature = Feature[feature]
-        operator = Operator[operator]
+        try:
+            operator = Operator[operator]
+        except KeyError:
+            operator = Operator.from_value(operator)
 
         if isinstance(value, Level):
             value = value.value
@@ -84,21 +110,32 @@ class CompoundRule:
     output: Output
 
     def __str__(self) -> str:
-        return f"Rules: {self.rules}, Conjunctions: {self.conjunctions}, Output: {self.output}"
+        conjunctions = self.conjunctions + [Conjunction.BLANK]
+        output_str = ""
+        for rule, conj in zip(self.rules, conjunctions):
+            if conj == Conjunction.BLANK:
+                output_str += f"{rule} "
+            else:
+                output_str += f"{rule} {conj} "
+
+        return f"{output_str}=> {self.output}"
     
     def __repr__(self) -> str:
         return self.__str__()
+
+    def __hash__(self) -> int:
+        return hash(self.__str__())
 
     def create_rule(rules: List[Rule], conjunctions: List[Conjunction], output: str) -> CompoundRule:
         output = Output[output]
         return CompoundRule(rules, conjunctions, output)
     
     def apply(self, x: torch.Tensor, pred: torch.Tensor, verbose: bool = False) -> None:
-        for i in range(x.shape[0]):
+        for i in range(len(x)):
             if self.eval_rule(x[i]):
                 if verbose:
-                    print(f"{self} applied to {x[i]}, {i}")
-                    print(f"Output: {self.output.value}")
+                    print(f"`{self}` applied to `{x[i]}`\n")
+                    print(f"Output: {self.output.value}\n")
                 pred[i] = self.output.value
     
     def eval_rule(self, x: torch.Tensor) -> torch.Tensor:

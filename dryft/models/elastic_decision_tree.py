@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, Set
 
 import pickle
 import torch
@@ -16,6 +16,8 @@ from .rule import CompoundRule
 from .rule_generator import RuleGenerator
 
 class NaiveDecisionTree(nn.Module):
+    """A naive decision tree model that uses sklearn's DecisionTreeClassifier."""
+
     def __init__(self, ckpt: Optional[str] = None) -> None:
         super().__init__()
 
@@ -44,6 +46,10 @@ class NaiveDecisionTree(nn.Module):
         return torch.tensor(self.model.predict(x.numpy())).float()
 
 class ElasticDecisionTree(NaiveDecisionTree):
+    """
+    An elastic decision tree model that uses sklearn's DecisionTreeClassifier and
+    applies a set of rules to the predictions of the decision tree.
+    """
     def __init__(self, 
                  rules_db_path: str = "rules_db", 
                  ckpt: Optional[str] = None, 
@@ -51,7 +57,7 @@ class ElasticDecisionTree(NaiveDecisionTree):
                  verbose: bool = False) -> None:
         super().__init__(ckpt)
 
-        self.rules: List[CompoundRule] = []
+        self.rules: Set[CompoundRule] = set()
         self.rule_generator = RuleGenerator()
         self.client = chromadb.PersistentClient(path=rules_db_path)
         if reset:
@@ -67,22 +73,33 @@ class ElasticDecisionTree(NaiveDecisionTree):
                 print("Adding:", rule)
             self.add_rule(rule)
     
-    def add_rule(self, rule: CompoundRule) -> None:
-        self.rules.append(rule)
+    def add_rule(self, rule: CompoundRule) -> bool:
+        before_len = len(self.rules)
+        self.rules.add(rule)
+        return len(self.rules) != before_len
     
     def fit_to_feedback(self, data: DTPartDataset) -> None:
         for i in range(len(data)):
             feedback, row = data.get_feedback(i)
-            if feedback is not None and not self.check_rules_db(feedback):
-                try:
-                    rule = self.rule_generator.generate_rule(feedback, row)
-                except ValueError:
-                    continue
-                print(feedback)
+            if feedback is not None:
+                self.add_rule_from_feedback(feedback, row)
+
+    def add_rule_from_feedback(self, 
+                               feedback: str, 
+                               row: Optional[torch.Tensor], 
+                               add_to_db: bool = True,
+                               verbose: bool = False) -> None:
+        if not self.check_rules_db(feedback):
+            try:
+                rule = self.rule_generator.generate_rule(feedback, row)
+            except ValueError:
+                return
+            if self.add_rule(rule) and add_to_db:
+                print("Feedback:", feedback)
                 print(rule)
                 print()
-                self.add_rule(rule)
                 rule_b64 = base64.b64encode(dill.dumps(rule)).decode()
+
                 self.collection.add(
                     documents=[feedback],
                     metadatas=[{"rule": rule_b64}],

@@ -5,6 +5,10 @@ from openai import OpenAI
 from .rule import Rule, CompoundRule, Feature, Operator, Conjunction, Output
 
 class RuleGenerator:
+    """
+    Generates rules based on feedback given by the user for the 
+    MTO/MTS decision-making process.
+    """
     def __init__(self) -> None:
         self.client = OpenAI()
 
@@ -145,7 +149,18 @@ class RuleGenerator:
             }
         ]
 
-    def generate_rule(self, feedback: str, row: Optional[List]) -> CompoundRule:
+    def generate_rule(self, feedback: str, row: Optional[List[str]]) -> CompoundRule:
+        """
+        Generates a compound rule based on the feedback given by the user.
+
+        Args:
+            feedback (str): The feedback given by the user.
+            row (List[str]): The row of features for which the feedback was given. Expected
+                to be a list of {feature: value} string pairs.
+        
+        Returns:
+            CompoundRule: The compound rule generated based on the feedback.
+        """
         prompt = self.global_prompt + "\n" + str(row) + "\n" + feedback
         response = self.client.chat.completions.create(
             model="gpt-4o-mini",
@@ -172,6 +187,7 @@ class RuleGenerator:
         return CompoundRule(rules, conjunctions, output)
     
     def _generate_conjunctions(self, rules: List[Rule]) -> List[Conjunction]:
+        """Backup method to generate conjunctions if the LLM initially fails to generate them correctly."""
         rule_str = " ".join([str(rule) for rule in rules])
 
         prompt = self.conjunction_prompt + rule_str
