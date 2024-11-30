@@ -19,3 +19,7 @@ Run
 python run_elastic_tree.py --train_data train_data_sample_no_mts.csv --test_data test_data_sample.csv --output_ckpt dryft/ckpts/naive_dt.pkl --reset --verbose
 ```
 to train and test an `ElasticDecisionTree` model.
+
+## Website
+You can play around with the model and change rules in real-time at
+[this demo website](https://prabhune-dryft.streamlit.app/)!
