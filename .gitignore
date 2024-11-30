@@ -10,3 +10,4 @@ wheels/
 .venv
 
 rules_db/
+.DS_Store
