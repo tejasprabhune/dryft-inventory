@@ -1,0 +1,21 @@
+material_id,is_sporadic,lead_time,demand,part_type,part_group,monthly_demand,name,supplier,serialnumber,supplier_provision,correct_decision,suggested_decision
+25439059,True,low,low,purchase_part,bolt,29,Carriage Bolt C8,Boellhoff,,True,MTO,MTO
+T7987276,False,medium,high,purchase_part,panel,1,Reinforced Panel R5,ThyssenKrupp,,,MTS,MTS
+26699231,True,high,low,assembly_group,air_system,20,Distribution Block B6,Festo,,,MTS,MTS
+28233028,False,high,low,purchase_part,air_system,19,Flow Regulator F1,Parker,,,MTS,MTS
+28128545,False,medium,low,purchase_part,bolt,14,Bolt M8x30,Boellhoff,,False,MTO,MTO
+26277984,False,medium,medium,assembly_group,panel,7,Touch Panel P7,Nexans,,,MTO,MTO
+28411071,False,medium,medium,assembly_group,panel,20,Protection Panel P7,ThyssenKrupp,,,MTO,MTS
+26608871,True,medium,high,assembly_group,air_system,18,Ventilation Group 3x4,Prysmian,,,MTO,MTS
+22447345,True,low,low,engineering_part,cable,10,Signal Cable 0.3in,Leoni,,,MTO,MTO
+24499300,False,low,medium,engineering_part,semiconductor,14,Power Module P8,Texas Instruments,SN163574,,MTO,MTO
+21378904,False,low,medium,assembly_group,bolt,20,Flange Bolt Group F6,Boellhoff,,,MTO,MTS
+28404715,True,medium,medium,purchase_part,panel,25,Reinforced Panel R5,Salzgitter,,,MTS,MTS
+T8429193,True,medium,medium,engineering_part,bolt,14,Safety Bolt S2,Wuerth,,,MTO,MTO
+25351643,True,high,low,assembly_group,bolt,20,T-Head Bolt Construction T8,A&T Manufacturing,,,MTS,MTS
+T8331443,True,high,medium,assembly_group,air_system,18,Turbo Flow Funnel 32,Prysmian,SN983079,False,MTS,MTS
+23620707,True,low,high,purchase_part,air_system,25,Air Filter T2,SMC,SN535569,,MTS,MTS
+T5803482,False,medium,medium,purchase_part,cable,18,Signal Cable 0.3in,Nexans,,True,MTS,MTS
+27065959,False,medium,low,purchase_part,panel,4,Base Panel T1,O-Manufacturing,,,MTO,MTO
+25169126,False,high,low,assembly_group,air_system,8,Flow Funnel 32,Nexans,,,MTO,MTS
+T2487793,False,medium,low,purchase_part,air_system,18,Air Dryer D4,Festo,,False,MTO,MTO
