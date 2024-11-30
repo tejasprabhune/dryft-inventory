@@ -13,3 +13,9 @@
 ## Full Design Doc
 See [this design doc](https://docs.google.com/document/d/1XZCzf0UiKWMm1EEbJq63oaEKcUfz6U58dwCQwC0dwUM/edit?usp=sharing)
 for the full details on models implemented.
+
+Run 
+```bash
+python run_elastic_tree.py --train_data train_data_sample_no_mts.csv --test_data test_data_sample.csv --output_ckpt dryft/ckpts/naive_dt.pkl --reset --verbose
+```
+to train and test an `ElasticDecisionTree` model.
